@@ -1,11 +1,12 @@
 import './App.css';
-import React, {useState} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import {FlightTable} from "./FlightTable";
 import Papa from "papaparse";
 
 function App() {
   const [searchText, setSearchText] = useState("");
   const [flightData, setFlightData] = useState([]);
+  const ref = useRef(null);
 
   async function fetchCsv() {
     const response = await fetch('data/flights.csv');
@@ -23,12 +24,17 @@ function App() {
 
   const clearField = () => {
     setSearchText("");
+    setFlightData([]);
+    ref.current.value = "";
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
+    setSearchText(ref.current.value);
+  }
+
+  const refreshFlightData = async () => {
     var flights = [];
     await getData().then(rows => {
-        console.log(rows);
         const queryString = searchText.toLowerCase();
         rows.forEach(row => {
           const origin = row.origin ? row.origin.toLowerCase() : "";
@@ -44,23 +50,29 @@ function App() {
       setFlightData(flights);
     });
   }
-  
+
+  useEffect(() => {
+    refreshFlightData();
+  }, [searchText]);
+
   return (
     <div className="App">
       <h1>Flight Search</h1>
-      <input className="searchBar" placeholder="Search by city..." value={searchText} onChange={e => setSearchText(e.target.value)}/>
+      <input ref={ref} className="searchBar" placeholder="Search by city..." />
       <div className="buttonGroup">
         <button onClick={clearField}>Clear</button>
         { "   " }
         <button onClick={handleSubmit}>Submit</button>
       </div>
-      {flightData.length > 0 && (
+      {searchText.length > 0 && flightData.length === 0 ? ( 
+        <p>No results found for {searchText} </p>
+      ) : searchText.length > 0 && (
         <>
-          <p>Results for <b>{searchText}</b></p>
+          <p>Results for <b>{searchText}</b></p> 
           <FlightTable flightData={flightData} />
         </>
-      )}
-
+    )}
+      
     </div>
   );
 }

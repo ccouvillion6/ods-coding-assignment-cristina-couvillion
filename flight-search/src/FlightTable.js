@@ -8,27 +8,31 @@ export const FlightTable = ({flightData}) => {
           return <></>;
         }
         const flightRows = flights.map(row => {
-          return <TableRow data={row} />
+          return <TableRow data={row} key={row.id} />
         });
         return flightRows;
     }
 
     return (
         <>
-        <table>
-            <thead>
-            <tr>
-                <th>Flight Number</th>
-                <th>From</th>
-                <th>To</th>
-                <th>ETD</th>
-                <th>ETA</th>
-            </tr>
-            </thead>
-            <tbody>
-            {addRows(flightData)}
-            </tbody>
-        </table>
+        {flightData.length > 0 && (
+            <>
+            <table>
+                <thead>
+                <tr>
+                    <th>Flight Number</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>ETD</th>
+                    <th>ETA</th>
+                </tr>
+                </thead>
+                <tbody>
+                {addRows(flightData)}
+                </tbody>
+            </table>
+            </> 
+        )}
         </>
     );
 }
