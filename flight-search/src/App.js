@@ -1,6 +1,6 @@
 import './App.css';
 import React, {useState} from "react";
-import {TableRow} from "./TableRow";
+import {FlightTable} from "./FlightTable";
 import Papa from "papaparse";
 
 function App() {
@@ -25,60 +25,42 @@ function App() {
     setSearchText("");
   }
 
-  const handleSubmit = (e) => {
-    setSearchText(e.target.value);
+  const handleSubmit = async () => {
     var flights = [];
-    getData().then(rows => {
-        const queryString = e.target.value;
-        console.log(queryString);
+    await getData().then(rows => {
+        console.log(rows);
+        const queryString = searchText.toLowerCase();
         rows.forEach(row => {
-          const origin = row.origin.toLowerCase();
-          const originFull = row.origin_full_name.toLowerCase();
-          const dest = row.destination.toLowerCase();
-          const destFull = row.destination_full_name.toLowerCase();
+          const origin = row.origin ? row.origin.toLowerCase() : "";
+          const originFull = row.origin_full_name ? row.origin_full_name.toLowerCase() : "";
+          const dest = row.destination ? row.destination.toLowerCase() : "";
+          const destFull = row.destination_full_name ? row.destination_full_name.toLowerCase() : "";
           if (origin.includes(queryString) || originFull.includes(queryString) || dest.includes(queryString) || destFull.includes(queryString)) {
             flights.push(row);
           }
-          //console.log(flights);
         });
       }
-    ).finally(setFlightData(flights));
-  }
-
-  const insertTable = (flightData) => {
-    return (
-      <>
-        <p>Results</p>
-          <table>
-            <thead>
-              <tr>
-                <th>Flight Number</th>
-                <th>From</th>
-                <th>To</th>
-                <th>ETD</th>
-                <th>ETA</th>
-              </tr>
-            </thead>
-            <tbody>
-              {flightData.map(row => {
-                return <TableRow data={row} />
-              })}
-            </tbody>
-          </table>
-      </>
-    );
+    ).finally(() => {
+      setFlightData(flights);
+    });
   }
   
   return (
     <div className="App">
       <h1>Flight Search</h1>
-      <input className="searchBar" placeholder="Search by city..." />
+      <input className="searchBar" placeholder="Search by city..." value={searchText} onChange={e => setSearchText(e.target.value)}/>
       <div className="buttonGroup">
         <button onClick={clearField}>Clear</button>
         { "   " }
         <button onClick={handleSubmit}>Submit</button>
       </div>
-      {insertTable(flightData)}
+      {flightData.length > 0 && (
+        <>
+          <p>Results for <b>{searchText}</b></p>
+          <FlightTable flightData={flightData} />
+        </>
+      )}
+
     </div>
   );
 }
