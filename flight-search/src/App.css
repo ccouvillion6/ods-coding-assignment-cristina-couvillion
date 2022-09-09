@@ -1,6 +1,9 @@
 .App {
   text-align: center;
   padding: 20px;
+  font-family: "Trebuchet MS";
+  background-color: #003268;
+  color: white;
 }
 
 .searchBar {
@@ -8,9 +11,21 @@
   height: 50px;
   width: 500px;
   font-size: 20px;
+  font-family: "Trebuchet MS";
 }
 
-.buttonGroup {
-  padding: 20px;
-  color: grey;
+button {
+  margin: 20px;
+  font-size: 20px;
+  font-family: "Trebuchet MS";
+}
+
+table {
+  width: 100%;
+  border: 1px solid;
+  text-align: left;
+}
+
+td {
+  border-bottom: 1px solid white;
 }
